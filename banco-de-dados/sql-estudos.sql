@@ -1,3 +1,6 @@
+
+USE AdventureWorks2017;
+
 -- -- -- AULA 02 -- -- -- 
 -- PESQUISANDO DA TABELA PERSON 
 SELECT *
@@ -301,10 +304,208 @@ SELECT FirstName, COUNT(FirstName)
 FROM Person.Person
 WHERE Title = 'Mr.'
 GROUP BY FirstName
-HAVING COUNT(FirstName) > 10; 
+HAVING COUNT(FirstName) > 10;
+
+-- EXERCICIO 
+
+-- 1
+SELECT StateProvinceID, COUNT(StateProvinceID) 
+FROM Person.Address
+HAVING COUNT(StateProvinceID) > 1000
+
+-- 2
+SELECT ProductID, AVG(LineTotal) 
+FROM Sales.SalesOrderDetail
+GROUP BY ProductID
+HAVING AVG(LineTotal) < 1000000
 
 
-;
+-- -- -- AULA 14 -- -- -- 
+-- AS
+
+SELECT TOP 10 ListPrice as "Preço do produto" 
+FROM Production.Product;
+
+SELECT TOP 10 AVG(ListPrice) as "Média de Preço"
+FROM Production.Product;
+
+SELECT FirstName as Nome, LastName as Sobrenome 
+FROM Person.Person;
+
+SELECT ProductNumber as "Número do Produto"
+FROM Production.Product;
+
+SELECT UnitPrice as "Preço Unitário"
+FROM Sales.SalesOrderDetail;
+
+-- -- -- AULA 15 -- -- -- 
+-- INNER JOIN 
+
+SELECT TOP 10 * FROM Person.Person
+
+SELECT TOP 10 * FROM Person.EmailAddress
+
+SELECT p.BusinessEntityID, p.FirstName, p.LastName, pe.EmailAddress
+FROM Person.Person as p 
+INNER JOIN Person.EmailAddress pe ON p.BusinessEntityID = pe.BusinessEntityID
+
+
+SELECT TOP 10 * FROM Production.Product
+
+SELECT TOP 10 * FROM Production.ProductSubcategory
+
+SELECT pr.ListPrice, pr.Name, pc.Name
+FROM Production.Product pr
+INNER JOIN Production.Product pc ON pc.ProductSubcategoryID = pr.ProductSubcategoryID
+
+-- EXERCICIO 
+SELECT TOP 10 BusinessEntityId, pn.Name, pn.PhoneNumberTypeID, PhoneNumber
+FROM Person.PhoneNumberType pn
+INNER JOIN Person.PersonPhone pp ON pp.PhoneNumberTypeID = pn.PhoneNumberTypeID
+
+SELECT TOP 10 pa.AddressID, pa.City, ps.StateProvinceID, ps.Name
+FROM Person.Address pa 
+INNER JOIN Person.StateProvince ps ON ps.StateProvinceID = pa.StateProvinceID
 
 
 
+-- -- -- AULA 16 -- -- -- 
+-- TIPOS DE JOIN 
+SELECT * 
+FROM Person.Person pp 
+LEFT JOIN Sales.PersonCreditCard pc
+ON pp.BusinessEntityID = pc.BusinessEntityID
+
+
+SELECT * 
+FROM Person.Person pp 
+LEFT JOIN Sales.PersonCreditCard pc
+ON pp.BusinessEntityID = pc.BusinessEntityID
+WHERE CreditCardID IS NULL; 
+
+
+-- -- -- AULA 17 -- -- -- 
+-- UNION 
+/*
+	O UNION AGRUPA AS INFORMAÇÕES ENTRE DOIS SELECTS DISTINTOS, 
+	REMOVE OS DADOS DUPLICADOS
+*/
+
+-- -- -- AULA 18 -- -- -- 
+-- SELF JOIN 
+
+-- -- -- AULA 20 -- -- -- 
+/*
+	SUBQUERY 
+	UMA FORMA PRÁTICA DE COMPARAR VALORES DINÂMICOS DAS TABELAS 
+*/
+
+SELECT * 
+FROM Production.Product
+WHERE ListPrice > (SELECT AVG(listPrice) FROM Production.Product)
+
+
+SELECT FirstName 
+FROM Person.Person
+WHERE BusinessEntityID IN 
+(
+	SELECT BusinessEntityID FROM HumanResources.Employee
+	WHERE JobTitle = 'Design Engineer'
+)
+
+SELECT P.FirstName 
+FROM Person.Person P 
+INNER JOIN HumanResources.Employee E ON P.BusinessEntityID = E.BusinessEntityID
+AND E.JobTitle = 'Design Engineer'
+
+
+SELECT * 
+FROM Person.Address
+WHERE StateProvinceID IN 
+(
+	SELECT StateProvinceID FROM Person.StateProvince
+	WHERE Name = 'Alberta'
+)
+
+-- -- -- AULA 21 -- -- -- 
+-- DATERPART
+SELECT AVG(TotalDue), DATEPART(MONTH,OrderDate) as Mes
+FROM Sales.SalesOrderHeader
+GROUP BY DATEPART(MONTH, OrderDate)
+ORDER BY Mes;
+
+SELECT SalesOrderID, DATEPART(DAY, OrderDate) as Mes
+FROM Sales.SalesOrderHeader
+
+
+-- -- -- AULA 22 -- -- -- 
+-- MANIPULAÇÃO DE STRING 
+
+-- CONCAT PERMITE QUE MANIPULAMOS O QUE SERÁ APRESENTADO PELA CONSULTA
+SELECT CONCAT(FirstName,' ', LastName) 
+FROM Person.Person
+
+-- UPPER E LOWER MANIPULAM AS LETRAS
+SELECT UPPER(FirstName), LOWER(FirstName)
+FROM Person.Person
+
+-- LEN TRÁS UMA CONTAGEM DE CARACTERE 
+SELECT FirstName, LEN(FirstName)
+FROM Person.Person
+
+-- SUBSTRING PEGA SOMENTE AS OS CARACTERES APONTADOS NAS POSIÇÕES ESPECIFICAS
+SELECT FirstName, SUBSTRING(FirstName, 1, 3)
+FROM Person.Person
+
+-- REPLACE SUBSTITUI UM CARACTERE POR OUTRO
+SELECT ProductNumber,REPLACE(ProductNumber, '-', '#')
+FROM Production.Product
+
+
+-- -- -- AULA 23 -- -- -- 
+-- FUNÇÕES MATEMÁTICAS 
+
+SELECT UnitPrice + LineTotal 
+FROM Sales.SalesOrderDetail
+
+SELECT ROUND(LineTotal, 2), LineTotal
+FROM Sales.SalesOrderDetail
+
+-- RAIZ QUADRADA
+SELECT ROUND(SQRT(LineTotal), 2)
+FROM Sales.SalesOrderDetail
+
+-- -- -- AULA 24 -- -- -- 
+-- TIPOS DE DADOS 
+
+/*
+	BOLEANOS  -> BIT
+
+	CARACTERE -> CHAR / VARCHAR / NVARCHAR
+	
+	NÚMEROS   
+		- VALORES EXATOS -> TINITY, SMALLINT, IN, BIGINT, NUMERIC, DECIMAL
+		- VALORES APROXIMADOS -> REAL, FLOAT,  
+	
+	TEMPORAIS -> DATE, DATETIME, DATETIME2, SMALLDATETIME, TIME, DATETIMEOFFSET
+
+*/
+
+
+-- -- -- AULA 25 -- -- -- 
+-- CRIANDO TABELAS 
+
+/*
+	NOT NULL -> Não permite números
+	UNIQUE -> Não permite valores semelhantes 
+	PRIMARY KEY -> Identificador 
+	FOREIGN KEY -> Referencia de outra tabela 
+	CHECK -> Força uma confição especifica na coluna 
+	DEFAULT -> Força um valor de padrão quando receber nulo 
+
+
+*/
+
+
+
+-- -- -- ÚLTIMA AULA -- -- -- 
