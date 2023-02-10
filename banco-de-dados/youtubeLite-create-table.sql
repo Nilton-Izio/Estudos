@@ -17,4 +17,3 @@ CREATE TABLE Video(
 	Duracao INT NOT NULL, 
 	CanalID INT FOREIGN KEY REFERENCES Canal(CanalID)
 );
-
